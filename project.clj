@@ -8,4 +8,6 @@
                  [clj-http "3.8.0"]]
   :main ^:skip-aot trello-cmd.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:uberjar {:aot :all}
+             :dev {:plugins [[lein-binplus "0.6.4"]]}}
+  :bin {:name "trelloj"})

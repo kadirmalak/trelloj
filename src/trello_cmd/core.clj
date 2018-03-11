@@ -2,30 +2,30 @@
   (:gen-class)
   (:require [trello-cmd.trello-api :as trello]))
 
-(defn command-not-found [& _] [{:display-text "could not understand command"}])
-
 (defn mk-string [& strings] (clojure.string/join "\n" strings))
 
 (defn get-help-text []
-  (mk-string "available commands:"
-             " - boards"
-             " - lists <board-name>"
-             " - cards <board-name> <list-name>"
+  (mk-string "usage:"
+             " - trelloj (lists boards)"
+             " - trelloj <board-name> (lists board lists)"
+             " - trelloj <board-name> <list-name> (lists list cards)"
              ""))
 
-(def commands
-  {"boards" (fn [] (trello/boards))
-   "lists" (fn [board-name] (trello/lists-by-board-name board-name))
-   "cards" (fn [board-name list-name]
+(defn command-not-found [& _] [{:display-text "could not understand command"}])
+
+(def commands-by-arity
+  {0 (fn [] (trello/boards))
+   1 (fn [board-name] (trello/lists-by-board-name board-name))
+   2 (fn [board-name list-name]
              (trello/cards-by-board-name-and-list-name board-name list-name))})
 
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (if (= 0 (count args))
+  (if (and (= 1 (count args)) (= "help" (first args)))
     (println (get-help-text))
-    (let [cmd (get commands (first args) command-not-found)
-          results (apply cmd (rest args))]
+    (let [cmd (get commands-by-arity (count args))
+          results (if cmd (apply cmd args) (command-not-found))]
       (if (empty? results)
         (println "no results..."))
       (doseq [result results]
@@ -35,6 +35,7 @@
 ;(-main "boards")
 ;(-main "lists" "todo")
 ;(-main "cards" "todo" "easy")
+;(-main "cards" "todo" "easy" "asd")
 
 ;(-main "boardsx")
 ;(-main "lists" "todox")
