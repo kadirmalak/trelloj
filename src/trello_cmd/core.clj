@@ -25,7 +25,9 @@
   (if (and (= 1 (count args)) (= "help" (first args)))
     (println (get-help-text))
     (let [cmd (get commands-by-arity (count args))
-          results (if cmd (apply cmd args) (command-not-found))]
+          results (if cmd
+                    (apply cmd args)
+                    (command-not-found))]
       (if (empty? results)
         (println "no results..."))
       (doseq [result results]

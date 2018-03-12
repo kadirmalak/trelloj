@@ -13,7 +13,7 @@
 (def TOKEN (get config "token"))
 
 (defn fetch [url f]
-  (let [http-response (client/get url)
+  (let [http-response (client/get url {:cookie-policy :none})
         response (json/read-str (:body http-response))]
     (map f response)))
 
